@@ -1,11 +1,11 @@
 import time
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 
 from app.models.request_models import QueryRequest
 from app.services.rag_service import prepare_rag_prompt
-from app.services.ollama_service import call_ollama
+from app.services.ollama_service import call_ollama, call_ollama_sse
 
 
 router = APIRouter(
@@ -50,17 +50,21 @@ def query_rag(request: QueryRequest):
         )
 
 
-@router.post("/query/stream")
-def query_rag_stream(request: QueryRequest):
+@router.get("/query/stream")
+def query_rag_stream_get(query: str = Query(...)):
     try:
-        rag_data = prepare_rag_prompt(request.query)
+        rag_data = prepare_rag_prompt(query)
 
         return StreamingResponse(
-            call_ollama(
-                prompt=rag_data["prompt"],
-                stream=True
+            call_ollama_sse(
+                prompt=rag_data["prompt"]
             ),
-            media_type="text/plain"
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
+            }
         )
 
     except Exception as error:

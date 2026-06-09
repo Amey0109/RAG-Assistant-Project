@@ -85,12 +85,12 @@ def build_context_from_chunks(chunks: List[Dict[str, Any]]) -> str:
 
         context_parts.append(
             f"""
-[Source PDF: {source}]
-[PDF Page: {page}]
-[Chunk Index: {chunk_index}]
+        [Source PDF: {source}]
+        [PDF Page: {page}]
+        [Chunk Index: {chunk_index}]
 
-{doc}
-""".strip()
+        {doc}
+        """.strip()
         )
 
     return "\n\n--------------------\n\n".join(context_parts)
@@ -98,27 +98,28 @@ def build_context_from_chunks(chunks: List[Dict[str, Any]]) -> str:
 
 def build_prompt(query: str, context: str) -> str:
     return f"""
-You are a helpful document question-answering assistant.
+    Firstly you are allowed to do friendly conversation.
+    You are a helpful document question-answering assistant.
 
-Use the provided context to answer the user's question.
+    Use the provided context to answer the user's question.
+    Use previous chat history only to understand follow-up questions.
+    Important rules:
+    1. Use only information from the context.
+    2. Do not use outside knowledge.
+    3. Do not invent facts.
+    4. If the context contains relevant information, answer using that information.
+    5. If the context contains partial information, answer with the partial information and say that no more details were found.
+    6. Only say "I could not find this information in the provided documents." when there is no relevant information at all in the context.
+    7. Mention source PDF and PDF page if available in the metadata.
 
-Important rules:
-1. Use only information from the context.
-2. Do not use outside knowledge.
-3. Do not invent facts.
-4. If the context contains relevant information, answer using that information.
-5. If the context contains partial information, answer with the partial information and say that no more details were found.
-6. Only say "I could not find this information in the provided documents." when there is no relevant information at all in the context.
-7. Mention source PDF and PDF page if available in the metadata.
+    Context:
+    {context}
 
-Context:
-{context}
+    Question:
+    {query}
 
-Question:
-{query}
-
-Answer:
-"""
+    Answer:
+    """
 
 
 def prepare_rag_prompt(query: str):
@@ -148,3 +149,4 @@ def prepare_rag_prompt(query: str):
         "context": context,
         "prompt": prompt
     }
+

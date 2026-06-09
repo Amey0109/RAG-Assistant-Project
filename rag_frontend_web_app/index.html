@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local PDF RAG Assistant</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">R</div>
+                <div>
+                    <h1>PDF Assistant</h1>
+                    <p>Ask questions from your documents</p>
+                </div>
+            </div>
+
+            <section class="card upload-card">
+                <div class="section-title">
+                    <span>Upload PDF</span>
+                    <small>PDF only</small>
+                </div>
+
+                <label class="drop-zone" for="pdfInput">
+                    <input id="pdfInput" type="file" accept="application/pdf" />
+                    <span class="drop-icon">⬆</span>
+                    <strong id="fileName">Choose a PDF</strong>
+                </label>
+
+                <label class="checkbox-row">
+                    <input id="replaceExisting" type="checkbox" checked />
+                    <span>Replace same document</span>
+                </label>
+
+                <button id="uploadBtn" class="primary-btn">Add Document</button>
+                <p id="uploadStatus" class="status-text"></p>
+            </section>
+
+            <section class="card docs-card">
+                <div class="section-title">
+                    <span>Your Documents</span>
+                    <button id="refreshDocsBtn" class="ghost-btn">Refresh</button>
+                </div>
+
+                <div id="documentsList" class="documents-list">
+                    <div class="empty-state">No documents loaded yet.</div>
+                </div>
+            </section>
+        </aside>
+
+        <main class="chat-panel">
+            <header class="chat-header">
+                <div>
+                    <h2>Chat with your documents</h2>
+                    <p>Upload PDFs and ask questions in a simple chat interface.</p>
+                </div>
+                <div id="apiBadge" class="api-badge">Connection checking...</div>
+            </header>
+
+            <section id="chatMessages" class="chat-messages">
+                <div class="message assistant-message">
+                    <div class="avatar">AI</div>
+                    <div class="bubble">
+                        <p>Hello! Upload a PDF, then ask me questions about your documents.</p>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="chat-input-area">
+                <form id="chatForm" class="chat-form">
+                    <textarea id="queryInput" rows="1" placeholder="Ask a question like: What are leave policies?"></textarea>
+                    <button id="sendBtn" type="submit">Send</button>
+                </form>
+                <p class="hint">Press Enter to send. Use Shift + Enter for a new line.</p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
