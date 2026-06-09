@@ -4,6 +4,18 @@ from app.config import N_RESULTS
 from app.database.chroma_client import get_collection
 from app.services.document_service import get_available_sources
 
+# Add to rag_service.py
+
+CASUAL_TRIGGERS = [
+    "hi", "hello", "hey", "hii", "good morning", "good afternoon",
+    "good evening", "how are you", "how are you doing", "what's up",
+    "thanks", "thank you", "ok", "okay", "bye", "goodbye"
+]
+
+def is_casual_chat(query: str) -> bool:
+    q = query.lower().strip()
+    return any(q == t or q.startswith(t) for t in CASUAL_TRIGGERS)
+
 
 def detect_source_from_query(query: str, sources: List[str]) -> Optional[str]:
     query_lower = query.lower()
@@ -37,6 +49,9 @@ def detect_source_from_query(query: str, sources: List[str]) -> Optional[str]:
 def retrieve_chunks(query: str, source_filter: Optional[str], n_results: int = N_RESULTS):
     collection = get_collection()
 
+    if collection.count() == 0:
+        return []
+    
     if source_filter:
         results = collection.query(
             query_texts=[query],
@@ -98,11 +113,10 @@ def build_context_from_chunks(chunks: List[Dict[str, Any]]) -> str:
 
 def build_prompt(query: str, context: str) -> str:
     return f"""
-    Firstly you are allowed to do friendly conversation.
     You are a helpful document question-answering assistant.
 
     Use the provided context to answer the user's question.
-    Use previous chat history only to understand follow-up questions.
+
     Important rules:
     1. Use only information from the context.
     2. Do not use outside knowledge.
@@ -124,29 +138,18 @@ def build_prompt(query: str, context: str) -> str:
 
 def prepare_rag_prompt(query: str):
     sources = get_available_sources()
+    source_filter = detect_source_from_query(query=query, sources=sources)
+    chunks = retrieve_chunks(query=query, source_filter=source_filter, n_results=N_RESULTS)
 
-    source_filter = detect_source_from_query(
-        query=query,
-        sources=sources
-    )
+    if not chunks:
+        context = "No documents have been uploaded yet."
+    else:
+        context = build_context_from_chunks(chunks)
 
-    chunks = retrieve_chunks(
-        query=query,
-        source_filter=source_filter,
-        n_results=N_RESULTS
-    )
-
-    context = build_context_from_chunks(chunks)
-
-    prompt = build_prompt(
-        query=query,
-        context=context
-    )
-
+    prompt = build_prompt(query=query, context=context)
     return {
-        "source_filter": source_filter,
-        "chunks": chunks,
-        "context": context,
+        "source_filter": source_filter, 
+        "chunks": chunks, 
+        "context": context, 
         "prompt": prompt
-    }
-
+        }

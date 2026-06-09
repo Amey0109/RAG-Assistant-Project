@@ -63,7 +63,7 @@ def add_uploaded_pdf_to_chromadb(
         "chunks_inserted": len(all_chunks),
         "old_chunks_deleted": deleted_old_chunks,
         "total_chunks_in_collection": collection.count(),
-        "first_chunk_preview": all_chunks[0][:500],
+        "first_chunk_preview": all_chunks[0],
         "first_chunk_metadata": metadatas[0]
     }
 

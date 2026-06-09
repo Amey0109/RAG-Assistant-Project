@@ -8,9 +8,8 @@ import re
 import hashlib
 from typing import List
 
-from pypdf import PdfReader
 
-from app.config import CHUNK_SIZE, CHUNK_OVERLAP
+
 
 
 def fix_spaced_characters(text: str) -> str:
