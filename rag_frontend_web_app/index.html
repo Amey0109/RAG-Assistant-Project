@@ -7,6 +7,30 @@
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+    <!-- Auth Screen -->
+<div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+        <div class="brand" style="justify-content:center; margin-bottom:24px;">
+            <div class="brand-icon">P</div>
+            <div>
+                <h1>PDF Assistant</h1>
+                <p>Sign in to access your documents</p>
+            </div>
+        </div>
+
+        <div class="auth-tabs">
+            <button id="loginTabBtn" class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+            <button id="registerTabBtn" class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+        </div>
+
+        <div class="auth-form">
+            <input id="authUsername" type="text" placeholder="Username" autocomplete="username" />
+            <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+            <button id="authSubmitBtn" class="primary-btn" onclick="handleAuth()">Login</button>
+            <p id="authError" class="status-text error" style="text-align:center;"></p>
+        </div>
+    </div>
+</div>
     <div class="app-shell">
         <aside class="sidebar">
             <div class="brand">
@@ -56,7 +80,11 @@
                     <h2>Chat with your documents</h2>
                     <p>Upload PDFs and ask questions in a simple chat interface.</p>
                 </div>
-                <div id="apiBadge" class="api-badge">Connection checking...</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span id="userBadge" class="user-badge"></span>        <!-- new -->
+                    <div id="apiBadge" class="api-badge">Connection checking...</div>
+                    <button id="logoutBtn" class="ghost-btn" onclick="logout()">Logout</button>   <!-- new -->
+                </div>
             </header>
 
             <section id="chatMessages" class="chat-messages">

@@ -1,12 +1,8 @@
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
-from app.config import DB_PATH, COLLECTION_NAME, EMBEDDING_MODEL_NAME
+from app.config import DB_PATH, EMBEDDING_MODEL_NAME
 
-
-client = chromadb.PersistentClient(
-    path=DB_PATH
-)
 
 sentence_transformer_ef = SentenceTransformerEmbeddingFunction(
     model_name=EMBEDDING_MODEL_NAME,
@@ -14,11 +10,13 @@ sentence_transformer_ef = SentenceTransformerEmbeddingFunction(
     normalize_embeddings=True
 )
 
-collection_instance = client.get_or_create_collection(
-    name=COLLECTION_NAME,
-    embedding_function=sentence_transformer_ef
-)
 
+def get_collection(user_id: str):
+    client = chromadb.PersistentClient(
+        path=f"{DB_PATH}/{user_id}"
+    )
 
-def get_collection():
-    return collection_instance
+    return client.get_or_create_collection(
+        name=f"user_{user_id}",
+        embedding_function=sentence_transformer_ef
+    )

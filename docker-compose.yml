@@ -1,0 +1,26 @@
+services:
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+
+  rag-app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - rag_data:/app/data
+    environment:
+      - OLLAMA_MODEL=qwen2.5:1.5b
+      - OLLAMA_HOST=http://ollama:11434
+      - JWT_SECRET=9af19d0daca9d4dcadbd9e3523a5dfd8171bb6f819b26dd1236e6b1e50ae9017
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  rag_data:
